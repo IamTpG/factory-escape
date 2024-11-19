@@ -7,10 +7,10 @@ Character::Character()
 {
     setAnimationCount((int)Animation::Character::MAX_COUNT);
 
-    addAnimation((int)Animation::Character::IDLE_RIGHT, CHARACTER_PATH, 2, 0, 16, 16, 2, 3);
-    addAnimation((int)Animation::Character::IDLE_LEFT,  CHARACTER_PATH, 3, 0, 16, 16, 2, 3);
-    addAnimation((int)Animation::Character::WALK_RIGHT, CHARACTER_PATH, 6, 0, 16, 16, 4, 3);
-    addAnimation((int)Animation::Character::WALK_LEFT,  CHARACTER_PATH, 7, 0, 16, 16, 4, 3);
+    addAnimation((int)Animation::Character::IDLE_RIGHT, CHARACTER_PATH, 2, 0, 16, 16, 2, 2);
+    addAnimation((int)Animation::Character::IDLE_LEFT,  CHARACTER_PATH, 3, 0, 16, 16, 2, 2);
+    addAnimation((int)Animation::Character::WALK_RIGHT, CHARACTER_PATH, 6, 0, 16, 16, 4, 8);
+    addAnimation((int)Animation::Character::WALK_LEFT,  CHARACTER_PATH, 7, 0, 16, 16, 4, 8);
 
     setPosition(
         Rectangle({

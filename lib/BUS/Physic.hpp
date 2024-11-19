@@ -56,6 +56,8 @@ public:
     static void applyPhysic(int index, Rectangle* position);
     static void setRigidbodyEnabled(int index, bool state);
     static void setRigidbodyVelocity(int index, Vector2 velocity);
+    static void setRigidbodyVelocityX(int index, float velocityX);
+    static void setRigidbodyVelocityY(int index, float velocityY);
     static void addRigidbodyForce(int index, Vector2 force);
     static void setColliderEnabled(int index, bool state);
     static Collider collider(int index);

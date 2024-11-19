@@ -4,6 +4,7 @@
 #include "../lib/DTO/Define.hpp"
 #include "../lib/DTO/Character.hpp"
 #include "../lib/GUI/AnimationRenderer.hpp"
+#include "../lib/DTO/Animation.hpp"
 
 #include "../lib/BUS/Physic.hpp"
 
@@ -90,29 +91,35 @@ int main()
     while (!WindowShouldClose()) {
         
         /// Input
-        if (IsKeyDown(KEY_UP) && Physic::rigidbody(c.index()).isGrounded) {
-            Physic::setRigidbodyVelocity(c.index(),
-                Vector2({0, CHARACTER_SPEED_Y})
-            );
-        }
         if (IsKeyDown(KEY_RIGHT)) {
-            Physic::setRigidbodyVelocity(c.index(),
-                Vector2({CHARACTER_SPEED_X, 0})
-            );
+            Physic::setRigidbodyVelocityX(c.index(), CHARACTER_SPEED_X);
+            c.setAnimation((int)Animation::Character::WALK_RIGHT);
         }
         if (IsKeyDown(KEY_LEFT)) {
-            Physic::setRigidbodyVelocity(c.index(),
-                Vector2({-CHARACTER_SPEED_X, 0})
-            );
+            Physic::setRigidbodyVelocityX(c.index(), -CHARACTER_SPEED_X);
+            c.setAnimation((int)Animation::Character::WALK_LEFT);
+        }
+        if (IsKeyDown(KEY_UP) && Physic::rigidbody(c.index()).isGrounded) {
+            Physic::setRigidbodyVelocityY(c.index(), CHARACTER_SPEED_Y);
         }
 
         // Update
         Physic::applyPhysic(c.index(), &c._position);
 
+        if (Physic::rigidbody(c.index()).velocity.x == 0 &&
+            Physic::rigidbody(c.index()).velocity.y == 0) {
+            if (c.currentAnimation() == (int)Animation::Character::WALK_RIGHT) {
+                c.setAnimation((int)Animation::Character::IDLE_RIGHT);
+            }
+            else if (c.currentAnimation() == (int)Animation::Character::WALK_LEFT) {
+                c.setAnimation((int)Animation::Character::IDLE_LEFT);
+            }
+        }
+
         // Render
         BeginDrawing();
             // Reset
-            ClearBackground(Color{178, 255, 102, 255});
+            ClearBackground(Color{150, 255, 102, 255});
             
             renderer.next(c.animation(), c.position());
             for (int i = 0; i < (int)obs.size(); i++) {
