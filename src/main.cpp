@@ -130,6 +130,7 @@ int main()
 
     CloseWindow();
     Physic::deInitPhysic();
-    cout << "Game ended\n";
+    
+    cout << "Game ended here\n";
     return 0;
 }
