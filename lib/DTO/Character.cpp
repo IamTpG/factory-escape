@@ -5,30 +5,32 @@
 
 Character::Character()
 {
-    setAnimationCount((int)Animation::Character::MAX_COUNT);
+    SetAnimationCount((int)Animation::Character::MAX_COUNT);
 
-    addAnimation((int)Animation::Character::IDLE_RIGHT, CHARACTER_PATH, 2, 0, 16, 16, 2, 2);
-    addAnimation((int)Animation::Character::IDLE_LEFT,  CHARACTER_PATH, 3, 0, 16, 16, 2, 2);
-    addAnimation((int)Animation::Character::WALK_RIGHT, CHARACTER_PATH, 6, 0, 16, 16, 4, 8);
-    addAnimation((int)Animation::Character::WALK_LEFT,  CHARACTER_PATH, 7, 0, 16, 16, 4, 8);
+    AddAnimation((int)Animation::Character::IDLE_RIGHT, CHARACTER_PATH, 2, 0, 16, 16, 2, 2);
+    AddAnimation((int)Animation::Character::IDLE_LEFT,  CHARACTER_PATH, 3, 0, 16, 16, 2, 2);
+    AddAnimation((int)Animation::Character::WALK_RIGHT, CHARACTER_PATH, 6, 0, 16, 16, 4, 8);
+    AddAnimation((int)Animation::Character::WALK_LEFT,  CHARACTER_PATH, 7, 0, 16, 16, 4, 8);
 
-    setPosition(
-        Rectangle({
-            (float)GetScreenWidth()  / 2,
-            (float)GetScreenHeight() / 2,
-            (float)64,
-            (float)64
-        })
+    Rectangle rect = Rectangle({
+        (float)GetScreenWidth()  / 2,
+        (float)GetScreenHeight() / 2,
+        (float)64,
+        (float)64
+    });
+
+    SetPosition(
+        rect
     );
 
     Rectangle hitbox = Rectangle({
-        (float)_position.x + 8,
-        (float)_position.y,
+        rect.x + 8,
+        rect.y,
         (float)48,
         (float)64
     });
 
-    Physic::addCollider(
+    Physic::AddCollider(
         _index,
         Collider({
             true,
@@ -38,7 +40,7 @@ Character::Character()
         })
     );
 
-    Physic::addRigidbody(
+    Physic::AddRigidbody(
         _index,
         Rigidbody({
             true,                   // enabled
@@ -53,11 +55,11 @@ Character::Character()
         })
     );
 
-    _setIdleOff();
-    _setMoveOff();
+    SetIdleOff();
+    SetWalkOff();
 
-    setState((int)Animation::Character::IDLE_RIGHT, true);
-    setAnimation((int)Animation::Character::IDLE_RIGHT);
+    SetState((int)Animation::Character::IDLE_RIGHT, true);
+    SetCurrentAnimation((int)Animation::Character::IDLE_RIGHT);
 }
 
 Character::~Character()
@@ -65,74 +67,61 @@ Character::~Character()
     // do nothing
 }
 
-void Character::_setIdleOff()
+void Character::SetIdleOff()
 {
-    setState((int)Animation::Character::IDLE_RIGHT, false);
-    setState((int)Animation::Character::IDLE_LEFT,  false);
+    SetState((int)Animation::Character::IDLE_RIGHT, false);
+    SetState((int)Animation::Character::IDLE_LEFT,  false);
 }
 
-void Character::_setMoveOff()
+void Character::SetWalkOff()
 {
-    setState((int)Animation::Character::WALK_RIGHT, false);
-    setState((int)Animation::Character::WALK_LEFT,  false);
+    SetState((int)Animation::Character::WALK_RIGHT, false);
+    SetState((int)Animation::Character::WALK_LEFT,  false);
 }
 
-bool Character::state(int index) const
+bool Character::GetState(int pIndex) const
 {
-    return _states[index];
+    return _states[pIndex];
 }
 
-void Character::setState(int index, bool value)
+void Character::SetState(int pIndex, bool value)
 {
-    _states[index] = value;
+    _states[pIndex] = value;
 }
 
-void Character::setAnimationCount(int count)
+void Character::SetAnimationCount(int pCount)
 {
-    Object::setAnimationCount(count);
-    _states.resize(count);
+    Object::SetAnimationCount(pCount);
+    _states.resize(pCount);
 }
 
-// void Character::move()
-// {
-//     if (state((int)Animation::Character::IDLE_RIGHT) == true) {
-//         setAnimation((int)Animation::Character::IDLE_RIGHT);
-//     }
-//     if (state((int)Animation::Character::IDLE_LEFT) == true) {
-//         setAnimation((int)Animation::Character::IDLE_LEFT);
-//     }
-    
-//     if (state((int)Animation::Character::WALK_RIGHT) == true) {
-//         setAnimation((int)Animation::Character::WALK_RIGHT);
-//     }
-//     if (state((int)Animation::Character::WALK_LEFT) == true) {
-//         setAnimation((int)Animation::Character::WALK_LEFT);
-//     }
+void Character::goRight()
+{
+    Physic::SetRigidbodyVelocityX(_index, CHARACTER_SPEED_X);
+    SetCurrentAnimation((int)Animation::Character::WALK_RIGHT);
+}
 
-//     if (_moveLeft == true) {
-//         setAnimation(_animationMoveLeft);
-//         setSpeedX(-Character::SPEED_X);
-//     }
-//     if (_moveRight == true) {
-//         setAnimation(_animationMoveRight);
-//         setSpeedX(Character::SPEED_X);
-//     }
-//     if (_moveUp == true) {
-//         setAnimation(_animationMoveUp);
-//         setSpeedY(-Character::SPEED_Y);
-//     }
-//     if (_moveDown == true) {
-//         setAnimation(_animationMoveDown);
-//         setSpeedY(Character::SPEED_Y);
-//     }
+void Character::goLeft()
+{
+    Physic::SetRigidbodyVelocityX(_index, -CHARACTER_SPEED_X);
+    SetCurrentAnimation((int)Animation::Character::WALK_LEFT);
+}
 
-//     Rectangle currentPosition = position();
-//     setPosition(Rectangle{currentPosition.x + speedX(),
-//                           currentPosition.y + speedY(),
-//                           currentPosition.width,
-//                           currentPosition.height});
+void Character::goUp()
+{
+    if (Physic::GetRigidbody(_index).isGrounded) {
+        Physic::SetRigidbodyVelocityY(_index, CHARACTER_SPEED_Y);
+    }
+}
 
-//     draw();
-//     setSpeedX(0);
-//     setSpeedY(0);
-// }
+void Character::goNowhere()
+{
+    if (Physic::GetRigidbody(_index).velocity.x == 0.0f && Physic::GetRigidbody(_index).velocity.y == 0.0f) {
+        if (_currentAnimationIndex == (int)Animation::Character::WALK_RIGHT) {
+            SetCurrentAnimation((int)Animation::Character::IDLE_RIGHT);
+        }
+        else if (_currentAnimationIndex == (int)Animation::Character::WALK_LEFT) {
+            SetCurrentAnimation((int)Animation::Character::IDLE_LEFT);
+        }
+    }
+}

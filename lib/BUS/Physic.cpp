@@ -4,23 +4,25 @@
 #include <math.h>
 #include <stdio.h>
 
+using std::pair;
+
 static Physic       physic              = {true, Vector2{0, 0}};
 static Collider*    colliders           = nullptr;
 static Rigidbody*   rigidbodies         = nullptr;
 static bool         collisionChecker    = false;
 static int          objectCount         = 0;
 
-int Physic::getObjectCount()
+int Physic::GetObjectCount()
 {
     return objectCount;
 }
 
-void Physic::addObjectCount()
+void Physic::AddObjectCount()
 {
     ++objectCount;
 }
 
-void Physic::initPhysic()
+void Physic::InitPhysic()
 {    
     colliders = new Collider[PHYSIC_MAX_COUNT];
     rigidbodies = new Rigidbody[PHYSIC_MAX_COUNT];
@@ -41,230 +43,238 @@ void Physic::initPhysic()
     }
 }
 
-void Physic::deInitPhysic()
+void Physic::DeInitPhysic()
 {
     delete[] colliders;
     delete[] rigidbodies;
 }
 
-void Physic::setPhysic(Physic settings)
+void Physic::SetPhysic(Physic pSettings)
 {
-    physic.enabled = settings.enabled;
-    physic.gravity = settings.gravity;
+    physic.enabled = pSettings.enabled;
+    physic.gravity = pSettings.gravity;
 }
 
-void Physic::setGravity(Vector2 force)
+void Physic::SetGravity(Vector2 pGravity)
 {
-    physic.gravity = force;
+    physic.gravity = pGravity;
 }
 
-void Physic::addCollider(int index, Collider collider)
+Collider Physic::GetCollider(int pIndex)
 {
-    colliders[index] = collider;
+    return colliders[pIndex];
 }
 
-void Physic::addRigidbody(int index, Rigidbody rigidbody)
+Rigidbody Physic::GetRigidbody(int pIndex)
 {
-    rigidbodies[index] = rigidbody;
+    return rigidbodies[pIndex];
 }
 
-void updatePositionX(int index, Rectangle* position)
+void Physic::AddCollider(int pIndex, Collider pCollider)
 {
-    // Update position and collider vector
-    position->x += rigidbodies[index].velocity.x;
-    colliders[index].boundary.x += rigidbodies[index].velocity.x;
-    
+    colliders[pIndex] = pCollider;
+}
+
+void Physic::AddRigidbody(int pIndex, Rigidbody pRigidbody)
+{
+    rigidbodies[pIndex] = pRigidbody;
+}
+
+void Physic::SetColliderEnabled(int pIndex, bool pState)
+{
+    colliders[pIndex].enabled = pState;
+}
+
+void Physic::SetRigidbodyEnabled(int pIndex, bool pState)
+{
+    rigidbodies[pIndex].enabled = pState;
+}
+
+void Physic::SetRigidbodyVelocity(int pIndex, Vector2 pVelocity)
+{
+    rigidbodies[pIndex].velocity.x = pVelocity.x;
+    rigidbodies[pIndex].velocity.y = pVelocity.y;
+}
+
+void Physic::SetRigidbodyVelocityX(int pIndex, float pVelocityX)
+{
+    rigidbodies[pIndex].velocity.x = pVelocityX;
+}
+
+void Physic::SetRigidbodyVelocityY(int pIndex, float velocityY)
+{
+    rigidbodies[pIndex].velocity.y = velocityY;
+}
+
+void Physic::AddRigidbodyForce(int pIndex, Vector2 pForce)
+{
+    rigidbodies[pIndex].acceleration.x = pForce.x * rigidbodies[pIndex].mass;
+    rigidbodies[pIndex].acceleration.y = pForce.y * rigidbodies[pIndex].mass;
+}
+
+// Helper function
+pair<bool, bool> CheckCollisionWithOthers(int pIndex)
+{
+    if (colliders[pIndex].enabled == false) {
+        return {false, false};
+    }
+
     // Check collision with other colliders
-    collisionChecker = false;
+    bool collisionChecker = false;
+    bool isGrounded = false;    
 
-    if (colliders[index].enabled) {
+    if (colliders[pIndex].enabled) {
         for (int j = 0; j < PHYSIC_MAX_COUNT; j++) {
-            if (index == j) {
+            if (pIndex == j) {
                 continue;
             }
 
             if (colliders[j].enabled) {
-                if (colliders[index].type == colliders[j].type && colliders[j].type == (bool)Collider::Type::RECTANGLE) {
-                    if (CheckCollisionRecs(colliders[index].boundary, colliders[j].boundary)) {
+                if (colliders[pIndex].type == colliders[j].type && colliders[j].type == (bool)Collider::Type::RECTANGLE) {
+                    if (CheckCollisionRecs(colliders[pIndex].boundary, colliders[j].boundary)) {
                         collisionChecker = true;
+                        
+                        // Check if the object is on the ground (only for Y-axis collision)
+                        if (colliders[pIndex].boundary.y < colliders[j].boundary.y) {
+                            isGrounded = true;
+                        }
                     }
                 }
-                if (colliders[index].type == colliders[j].type && colliders[j].type == (bool)Collider::Type::CIRCLE) {
-                    if (CheckCollisionCircles((Vector2){colliders[j].boundary.x, colliders[j].boundary.y}, colliders[j].radius, (Vector2){colliders[index].boundary.x, colliders[index].boundary.y}, colliders[index].radius)) {
+                if (colliders[pIndex].type == colliders[j].type && colliders[j].type == (bool)Collider::Type::CIRCLE) {
+                    if (CheckCollisionCircles((Vector2){colliders[j].boundary.x, colliders[j].boundary.y}, colliders[j].radius, (Vector2){colliders[pIndex].boundary.x, colliders[pIndex].boundary.y}, colliders[pIndex].radius)) {
                         collisionChecker = true;
+
+                        // Check if the object is on the ground (only for Y-axis collision)
+                        if (colliders[pIndex].boundary.y < colliders[j].boundary.y - colliders[j].radius) {
+                            isGrounded = true;
+                        }
                     }
                 }
-                if (colliders[index].type != colliders[j].type && colliders[j].type == (bool)Collider::Type::CIRCLE) {
-                    if (CheckCollisionCircleRec((Vector2){colliders[j].boundary.x, colliders[j].boundary.y}, colliders[j].radius, colliders[index].boundary)) {
+                if (colliders[pIndex].type != colliders[j].type && colliders[j].type == (bool)Collider::Type::CIRCLE) {
+                    if (CheckCollisionCircleRec((Vector2){colliders[j].boundary.x, colliders[j].boundary.y}, colliders[j].radius, colliders[pIndex].boundary)) {
                         collisionChecker = true;
+
+                        // Check if the object is on the ground (only for Y-axis collision)
+                        if (colliders[pIndex].boundary.y - colliders[pIndex].radius > colliders[j].boundary.y) {
+                            isGrounded = true;
+                        }
                     }
                 }
-                if (colliders[index].type != colliders[j].type && colliders[index].type == (bool)Collider::Type::CIRCLE) {
-                    if (CheckCollisionCircleRec((Vector2){colliders[index].boundary.x, colliders[index].boundary.y}, colliders[index].radius, colliders[j].boundary)) {
+                if (colliders[pIndex].type != colliders[j].type && colliders[pIndex].type == (bool)Collider::Type::CIRCLE) {
+                    if (CheckCollisionCircleRec((Vector2){colliders[pIndex].boundary.x, colliders[pIndex].boundary.y}, colliders[pIndex].radius, colliders[j].boundary)) {
                         collisionChecker = true;
+
+                        // Check if the object is on the ground (only for Y-axis collision)
+                        if (colliders[pIndex].boundary.y - colliders[pIndex].radius > colliders[j].boundary.y - colliders[j].radius) {
+                            isGrounded = true;
+                        }
                     }
                 }                    
             }
         }
     }
 
-    if (collisionChecker && rigidbodies[index].velocity.x != 0) {
-        position->x -= rigidbodies[index].velocity.x;
-        colliders[index].boundary.x -= rigidbodies[index].velocity.x;
-        rigidbodies[index].velocity.x = rigidbodies[index].velocity.x;
-    }
+    return {collisionChecker, isGrounded};
 }
 
-void updatePositionY(int index, Rectangle* position)
+// Helper function
+void UpdatePositionX(int pIndex, Rectangle* pPosition)
 {
-    // Update position and collider vector
-    position->y -= rigidbodies[index].velocity.y;
-    colliders[index].boundary.y -= rigidbodies[index].velocity.y;
+    // Update pPosition and collider vector
+    pPosition->x += rigidbodies[pIndex].velocity.x;
+    colliders[pIndex].boundary.x += rigidbodies[pIndex].velocity.x;
     
     // Check collision with other colliders
-    collisionChecker = false;
+    collisionChecker = CheckCollisionWithOthers(pIndex).first;
 
-    if (colliders[index].enabled) {
-        for (int j = 0; j < PHYSIC_MAX_COUNT; j++) {
-            if (index == j) continue;
-            
-            if (colliders[j].enabled) {
-                if (colliders[index].type == colliders[j].type && colliders[j].type == (bool)Collider::Type::RECTANGLE) {
-                    if (CheckCollisionRecs(colliders[index].boundary, colliders[j].boundary)) {
-                        collisionChecker = true;
-                    }
-                }
-                if (colliders[index].type == colliders[j].type && colliders[j].type == (bool)Collider::Type::CIRCLE) {
-                    if (CheckCollisionCircles((Vector2){colliders[j].boundary.x, colliders[j].boundary.y}, colliders[j].radius, (Vector2){colliders[index].boundary.x, colliders[index].boundary.y}, colliders[index].radius)) {
-                        collisionChecker = true;
-                    }
-                }
-                if (colliders[index].type != colliders[j].type && colliders[j].type == (bool)Collider::Type::CIRCLE) {
-                    if (CheckCollisionCircleRec((Vector2){colliders[j].boundary.x, colliders[j].boundary.y}, colliders[j].radius, colliders[index].boundary)) {
-                        collisionChecker = true;
-                    }
-                }
-                if (colliders[index].type != colliders[j].type && colliders[index].type == (bool)Collider::Type::CIRCLE) {
-                    if (CheckCollisionCircleRec((Vector2){colliders[index].boundary.x, colliders[index].boundary.y}, colliders[index].radius, colliders[j].boundary)) {
-                        collisionChecker = true;
-                    }
-                }                    
-            }
-        }
-    }
-    
-    // Update grounded rigidbody state
-    rigidbodies[index].isGrounded = collisionChecker;
-    
-    // Set grounded state if needed (fix overlap and set y velocity)
-    if (collisionChecker && rigidbodies[index].velocity.y != 0) {
-        position->y += rigidbodies[index].velocity.y;
-        colliders[index].boundary.y += rigidbodies[index].velocity.y;
-        rigidbodies[index].velocity.y = -rigidbodies[index].velocity.y * rigidbodies[index].bounciness;
+    // Re-update if there was a collision
+    if (collisionChecker && rigidbodies[pIndex].velocity.x != 0) {
+        pPosition->x -= rigidbodies[pIndex].velocity.x;
+        colliders[pIndex].boundary.x -= rigidbodies[pIndex].velocity.x;
+        rigidbodies[pIndex].velocity.x = rigidbodies[pIndex].velocity.x;
     }
 }
 
-void Physic::applyPhysic(int index, Rectangle *position)
+// Helper function
+void UpdatePositionY(int pIndex, Rectangle* pPosition)
 {
-    if (rigidbodies[index].enabled == false) {
+    // Update pPosition and collider vector
+    pPosition->y -= rigidbodies[pIndex].velocity.y;
+    colliders[pIndex].boundary.y -= rigidbodies[pIndex].velocity.y;
+    
+    // Check collision with other colliders
+    pair<bool, bool> collisionChecker = CheckCollisionWithOthers(pIndex);
+
+    // Update grounded rigidbody state
+    rigidbodies[pIndex].isGrounded = collisionChecker.second;
+    
+    // Re-update if there was a collision
+    if (collisionChecker.first && rigidbodies[pIndex].velocity.y != 0) {
+        pPosition->y += rigidbodies[pIndex].velocity.y;
+        colliders[pIndex].boundary.y += rigidbodies[pIndex].velocity.y;
+        rigidbodies[pIndex].velocity.y = -rigidbodies[pIndex].velocity.y * rigidbodies[pIndex].bounciness;
+    }
+}
+
+void Physic::ApplyPhysic(int pIndex, Rectangle *pPosition)
+{
+    if (rigidbodies[pIndex].enabled == false) {
         return;
     }
 
     // Apply gravity
-    rigidbodies[index].velocity.y += rigidbodies[index].acceleration.y;
-    rigidbodies[index].velocity.x += rigidbodies[index].acceleration.x;
+    rigidbodies[pIndex].velocity.y += rigidbodies[pIndex].acceleration.y;
+    rigidbodies[pIndex].velocity.x += rigidbodies[pIndex].acceleration.x;
     
-    rigidbodies[index].velocity.y += physic.gravity.y;
-    rigidbodies[index].velocity.x += physic.gravity.x;
+    rigidbodies[pIndex].velocity.y += physic.gravity.y;
+    rigidbodies[pIndex].velocity.x += physic.gravity.x;
     
     // Apply friction to velocity
-    if (rigidbodies[index].isGrounded) {
-        if (rigidbodies[index].velocity.x > DECIMAL_FIX) {
-            rigidbodies[index].velocity.x -= rigidbodies[index].friction;
+    if (rigidbodies[pIndex].isGrounded) {
+        if (rigidbodies[pIndex].velocity.x > DECIMAL_FIX) {
+            rigidbodies[pIndex].velocity.x -= rigidbodies[pIndex].friction;
         }
-        else if (rigidbodies[index].velocity.x < -DECIMAL_FIX) {
-            rigidbodies[index].velocity.x += rigidbodies[index].friction;
+        else if (rigidbodies[pIndex].velocity.x < -DECIMAL_FIX) {
+            rigidbodies[pIndex].velocity.x += rigidbodies[pIndex].friction;
         }
         else {
-            rigidbodies[index].velocity.x = 0;
+            rigidbodies[pIndex].velocity.x = 0;
         }
     }
     
-    // if (rigidbodies[index].velocity.y > DECIMAL_FIX) {
-    //     rigidbodies[index].velocity.y -= rigidbodies[index].friction;
+    // if (rigidbodies[pIndex].velocity.y > DECIMAL_FIX) {
+    //     rigidbodies[pIndex].velocity.y -= rigidbodies[pIndex].friction;
     // }
-    // else if (rigidbodies[index].velocity.y < -DECIMAL_FIX) {
-    //     rigidbodies[index].velocity.y += rigidbodies[index].friction;
+    // else if (rigidbodies[pIndex].velocity.y < -DECIMAL_FIX) {
+    //     rigidbodies[pIndex].velocity.y += rigidbodies[pIndex].friction;
     // }
     // else {
-    //     rigidbodies[index].velocity.y = 0;
+    //     rigidbodies[pIndex].velocity.y = 0;
     // }
     
     // Apply friction to acceleration
-    if (rigidbodies[index].isGrounded) {
-        if (rigidbodies[index].acceleration.x > DECIMAL_FIX) {
-            rigidbodies[index].acceleration.x -= rigidbodies[index].friction;
+    if (rigidbodies[pIndex].isGrounded) {
+        if (rigidbodies[pIndex].acceleration.x > DECIMAL_FIX) {
+            rigidbodies[pIndex].acceleration.x -= rigidbodies[pIndex].friction;
         }
-        else if (rigidbodies[index].acceleration.x < -DECIMAL_FIX) {
-            rigidbodies[index].acceleration.x += rigidbodies[index].friction;
+        else if (rigidbodies[pIndex].acceleration.x < -DECIMAL_FIX) {
+            rigidbodies[pIndex].acceleration.x += rigidbodies[pIndex].friction;
         }
         else {
-            rigidbodies[index].acceleration.x = 0;
+            rigidbodies[pIndex].acceleration.x = 0;
         }
     }
     
-    // if (rigidbodies[index].acceleration.y > DECIMAL_FIX) {
-    //     rigidbodies[index].acceleration.y -= rigidbodies[index].friction;
+    // if (rigidbodies[pIndex].acceleration.y > DECIMAL_FIX) {
+    //     rigidbodies[pIndex].acceleration.y -= rigidbodies[pIndex].friction;
     // }
-    // else if (rigidbodies[index].acceleration.y < -DECIMAL_FIX) {
-    //     rigidbodies[index].acceleration.y += rigidbodies[index].friction;
+    // else if (rigidbodies[pIndex].acceleration.y < -DECIMAL_FIX) {
+    //     rigidbodies[pIndex].acceleration.y += rigidbodies[pIndex].friction;
     // }
     // else {
-    //     rigidbodies[index].acceleration.y = 0;
+    //     rigidbodies[pIndex].acceleration.y = 0;
     // }
 
-    updatePositionX(index, position);
-    updatePositionY(index, position);
-}
-
-void Physic::setRigidbodyEnabled(int index, bool state)
-{
-    rigidbodies[index].enabled = state;
-}
-
-void Physic::setRigidbodyVelocity(int index, Vector2 velocity)
-{
-    rigidbodies[index].velocity.x = velocity.x;
-    rigidbodies[index].velocity.y = velocity.y;
-}
-
-void Physic::setRigidbodyVelocityX(int index, float velocityX)
-{
-    rigidbodies[index].velocity.x = velocityX;
-}
-
-void Physic::setRigidbodyVelocityY(int index, float velocityY)
-{
-    rigidbodies[index].velocity.y = velocityY;
-}
-
-void Physic::addRigidbodyForce(int index, Vector2 force)
-{
-    rigidbodies[index].acceleration.x = force.x * rigidbodies[index].mass;
-    rigidbodies[index].acceleration.y = force.y * rigidbodies[index].mass;
-}
-
-void Physic::setColliderEnabled(int index, bool state)
-{
-    colliders[index].enabled = state;
-}
-
-Collider Physic::collider(int index)
-{
-    return colliders[index];
-}
-
-Rigidbody Physic::rigidbody(int index)
-{
-    return rigidbodies[index];
+    UpdatePositionX(pIndex, pPosition);
+    UpdatePositionY(pIndex, pPosition);
 }

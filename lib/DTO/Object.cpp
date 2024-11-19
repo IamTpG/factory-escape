@@ -9,70 +9,55 @@ using std::cout;
 
 Object::Object()
 {
-    _currentAnimation = -1;
-    _index = Physic::getObjectCount();
-    Physic::addObjectCount();
+    _currentAnimationIndex = -1;
+    _index = Physic::GetObjectCount();
+    Physic::AddObjectCount();
 }
 
 Object::~Object()
 {
-
+    // do nothing
 }
 
-Rectangle Object::position() const
-{
-    return _position;
-}
-
-int Object::index() const
+int Object::GetIndex() const
 {
     return _index;
 }
 
-int Object::currentAnimation() const
+int Object::GetCurrentAnimationIndex() const
 {
-    return _currentAnimation;
+    return _currentAnimationIndex;
 }
 
-Animation Object::animation() const
+Animation Object::GetCurrentAnimation() const
 {
-    return _animations[_currentAnimation];
+    return _animations[_currentAnimationIndex];
 }
 
-void Object::setPosition(Rectangle value)
+Rectangle Object::GetPosition() const
 {
-    _position = value;
+    return position;
 }
 
-void Object::setCurrentAnimation(int value)
+void Object::SetCurrentAnimation(int pIndex)
 {
-    _currentAnimation = value;
+    _currentAnimationIndex = pIndex;
 }
 
-void Object::setAnimationCount(int value)
+void Object::SetAnimationCount(int pCount)
 {
-    _animations.resize(value);
+    _animations.resize(pCount);
 }
 
-void Object::addAnimation(int animationIndex, string imagePath, int row, int col, int width, int height, int amount, int framePerSecond)
+void Object::AddAnimation(int pAnimationIndex, string pImagePath, int pRow, int pCol, int pWidth, int pHeight, int pAmount, int pFramePerSecond)
 {
     AnimationProvider provider;
-    _animations[animationIndex] = provider.next(imagePath, row, col, width, height, amount, framePerSecond);
+    _animations[pAnimationIndex] = provider.next(
+        pImagePath, pRow, pCol, pWidth, pHeight, pAmount, pFramePerSecond
+    );
 }
 
-void Object::setAnimation(int animationIndex)
+void Object::SetPosition(Rectangle pPosition)
 {
-    _currentAnimation = animationIndex;
-
-    // if (_currentAnimation != animationIndex) {
-    //     _currentAnimation = animationIndex;
-
-    //     AnimationRenderer renderer;
-    //     renderer.next(_animations[animationIndex], _position);
-    // }
+    position = pPosition;
 }
-
-// void Object::draw()
-// {
-//     _animations[_currentAnimation].drawSpriteAnimationPro(_position, Vector2{ 0 }, 0.0f, WHITE);
-// }

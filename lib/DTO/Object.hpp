@@ -12,35 +12,30 @@ using std::vector;
 using std::string;
 
 class Object {
-public:
-    Rectangle _position;
 protected:
     int _index;
     // Collider _collider;      // hitbox
     // Rigidbody rigidbody;     // physics body
-    int _currentAnimation;
+    int _currentAnimationIndex;
     vector<Animation> _animations;
+public:
+    Rectangle position;
 public:
     Object();
     ~Object();
 
 public:
-    int index() const;
-    Rectangle position() const;
-    int currentAnimation() const;
-    Animation animation() const;
+    int GetIndex() const;
+    int GetCurrentAnimationIndex() const;
+    Animation GetCurrentAnimation() const;
+    Rectangle GetPosition() const;
 
-    void setPosition(Rectangle value);
-    void setCurrentAnimation(int value);
-    void setAnimationCount(int value);
+    void SetCurrentAnimation(int pIndex);
+    void SetAnimationCount(int pCount);
+    void SetPosition(Rectangle pPosition);
 
     /// @brief Add a sprite animation to vector<> _animations to _animations[index]
-    void addAnimation(int index, string imagePath, int row, int col, int width, int height, int amount, int framePerSecond);
-    
-    /// @brief Change the sprite animation to index and render it on the screen
-    void setAnimation(int index);
-
-    // void draw();
+    void AddAnimation(int index, string imagePath, int row, int col, int width, int height, int amount, int framePerSecond);
 };
 
 #endif // OBJECT_HPP

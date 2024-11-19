@@ -44,24 +44,29 @@ public:
     bool enabled;
     Vector2 gravity;
 public:
-    static int getObjectCount();
-    static void addObjectCount();
+    static int GetObjectCount();
+    static void AddObjectCount();
     
-    static void initPhysic();
-    static void deInitPhysic();
-    static void setPhysic(Physic settings);
-    static void setGravity(Vector2 force);
-    static void addCollider(int index, Collider collider);
-    static void addRigidbody(int index, Rigidbody rigidbody);
-    static void applyPhysic(int index, Rectangle* position);
-    static void setRigidbodyEnabled(int index, bool state);
-    static void setRigidbodyVelocity(int index, Vector2 velocity);
-    static void setRigidbodyVelocityX(int index, float velocityX);
-    static void setRigidbodyVelocityY(int index, float velocityY);
-    static void addRigidbodyForce(int index, Vector2 force);
-    static void setColliderEnabled(int index, bool state);
-    static Collider collider(int index);
-    static Rigidbody rigidbody(int index);
+    static void InitPhysic();
+    static void DeInitPhysic();
+
+    static void SetPhysic(Physic pSettings);
+    static void SetGravity(Vector2 pGravity);
+    
+    static Collider GetCollider(int pIndex);
+    static Rigidbody GetRigidbody(int pIndex);
+    
+    static void AddCollider(int pIndex, Collider pCollider);
+    static void AddRigidbody(int pIndex, Rigidbody pRigidbody);
+    
+    static void SetColliderEnabled(int pIndex, bool pState);
+    static void SetRigidbodyEnabled(int pIndex, bool pState);
+    static void SetRigidbodyVelocity(int pIndex, Vector2 pVelocity);
+    static void SetRigidbodyVelocityX(int pIndex, float pVelocityX);
+    static void SetRigidbodyVelocityY(int pIndex, float pVelocityY);
+    static void AddRigidbodyForce(int pIndex, Vector2 pForce);
+    
+    static void ApplyPhysic(int pIndex, Rectangle* pPosition);
 };
 
 #endif // PHYSIC_HPP

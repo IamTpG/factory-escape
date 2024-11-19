@@ -4,6 +4,7 @@
 // Main.cpp
 #define SCREEN_WIDTH            1080
 #define SCREEN_HEIGHT           720
+#define TILE_WIDTH              64
 #define TERRAIN_PATH            "assets/terrain.png"
 
 // Character.hpp

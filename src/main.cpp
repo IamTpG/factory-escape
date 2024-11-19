@@ -3,10 +3,13 @@
 
 #include "../lib/DTO/Define.hpp"
 #include "../lib/DTO/Character.hpp"
-#include "../lib/GUI/AnimationRenderer.hpp"
 #include "../lib/DTO/Animation.hpp"
 
+#include "../lib/DA/UserInputHandler.hpp"
+
 #include "../lib/BUS/Physic.hpp"
+
+#include "../lib/GUI/AnimationRenderer.hpp"
 
 using std::cout;
 
@@ -15,13 +18,13 @@ int main()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Crossy Game");
     SetTargetFPS(80);
 
-    Physic::initPhysic();
-    Physic::setGravity({0, GRAVITY});
+    Physic::InitPhysic();
+    Physic::SetGravity({0, GRAVITY});
 
     Character c;
     vector<Object> obs;
-
-    #define TILE_WIDTH 64
+    AnimationRenderer renderer;
+    UserInputHandler inputHandler;
 
     for (int i = 0; i < SCREEN_WIDTH / TILE_WIDTH; i++) {
         Object o;
@@ -33,12 +36,12 @@ int main()
             (float)TILE_WIDTH
         });
 
-        o.setPosition(
+        o.SetPosition(
             rect
         );
 
-        Physic::addCollider(
-            o.index(),
+        Physic::AddCollider(
+            o.GetIndex(),
             Collider({
                 true,
                 (bool)Collider::Type::RECTANGLE,
@@ -47,9 +50,9 @@ int main()
             })
         );
 
-        o.setAnimationCount(1);
-        o.addAnimation(0, TERRAIN_PATH, 1, 2, 32, 32, 1, 1);
-        o.setAnimation(0);
+        o.SetAnimationCount(1);
+        o.AddAnimation(0, TERRAIN_PATH, 1, 2, 32, 32, 1, 1);
+        o.SetCurrentAnimation(0);
 
         obs.push_back(o);
     }
@@ -65,12 +68,12 @@ int main()
             (float)TILE_WIDTH
         });
 
-        o.setPosition(
+        o.SetPosition(
             rect
         );
 
-        Physic::addCollider(
-            o.index(),
+        Physic::AddCollider(
+            o.GetIndex(),
             Collider({
                 true,
                 (bool)Collider::Type::RECTANGLE,
@@ -79,57 +82,35 @@ int main()
             })
         );
 
-        o.setAnimationCount(1);
-        o.addAnimation(0, TERRAIN_PATH, 1, 2, 32, 32, 1, 1);
-        o.setAnimation(0);
+        o.SetAnimationCount(1);
+        o.AddAnimation(0, TERRAIN_PATH, 1, 2, 32, 32, 1, 1);
+        o.SetCurrentAnimation(0);
 
         obs.push_back(o);
     }
 
-    AnimationRenderer renderer;
-
     while (!WindowShouldClose()) {
-        
         /// Input
-        if (IsKeyDown(KEY_RIGHT)) {
-            Physic::setRigidbodyVelocityX(c.index(), CHARACTER_SPEED_X);
-            c.setAnimation((int)Animation::Character::WALK_RIGHT);
-        }
-        if (IsKeyDown(KEY_LEFT)) {
-            Physic::setRigidbodyVelocityX(c.index(), -CHARACTER_SPEED_X);
-            c.setAnimation((int)Animation::Character::WALK_LEFT);
-        }
-        if (IsKeyDown(KEY_UP) && Physic::rigidbody(c.index()).isGrounded) {
-            Physic::setRigidbodyVelocityY(c.index(), CHARACTER_SPEED_Y);
-        }
+        inputHandler.next(c);
 
         // Update
-        Physic::applyPhysic(c.index(), &c._position);
-
-        if (Physic::rigidbody(c.index()).velocity.x == 0 &&
-            Physic::rigidbody(c.index()).velocity.y == 0) {
-            if (c.currentAnimation() == (int)Animation::Character::WALK_RIGHT) {
-                c.setAnimation((int)Animation::Character::IDLE_RIGHT);
-            }
-            else if (c.currentAnimation() == (int)Animation::Character::WALK_LEFT) {
-                c.setAnimation((int)Animation::Character::IDLE_LEFT);
-            }
-        }
+        Physic::ApplyPhysic(c.GetIndex(), &c.position);
 
         // Render
         BeginDrawing();
             // Reset
             ClearBackground(Color{150, 255, 102, 255});
-            
-            renderer.next(c.animation(), c.position());
+
+            renderer.next(c.GetCurrentAnimation(), c.position);
             for (int i = 0; i < (int)obs.size(); i++) {
-                renderer.next(obs[i].animation(), obs[i].position());
+                renderer.next(obs[i].GetCurrentAnimation(), obs[i].GetPosition());
             }
+
         EndDrawing();
     }
 
     CloseWindow();
-    Physic::deInitPhysic();
+    Physic::DeInitPhysic();
     
     cout << "Game ended here\n";
     return 0;

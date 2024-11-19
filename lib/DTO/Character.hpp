@@ -1,23 +1,27 @@
 #ifndef CHARACTER_HPP
 #define CHARACTER_HPP
 
+#include "CommandListener.hpp"
 #include "Object.hpp"
 
-class Character : public Object {
+class Character : public CommandListener, public Object{
 private:
     vector<bool> _states;
 public:
     Character();
     ~Character();
 public:
-    bool state(int index) const;
-    void setState(int index, bool value);
-    void setAnimationCount(int count);
+    bool GetState(int pIndex) const;
+    void SetState(int pIndex, bool pState);
+    void SetAnimationCount(int pCount);
 
-    void _setIdleOff();
-    void _setMoveOff();
-
-    // void move();
+    void SetIdleOff();
+    void SetWalkOff();
+public:
+    void goRight()      override;
+    void goLeft()       override;
+    void goUp()         override;
+    void goNowhere()    override;
 };
 
 #endif // CHARACTER_HPP
