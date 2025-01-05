@@ -18,7 +18,7 @@ void Game::Init()
     SetTargetFPS(GAME_FPS);
 
     _colliderSystem = Factory::GetInstance()->CreateColliderSystem();
-    _physicsSystem = Factory::GetInstance()->CreatePhysicsSystem();
+    _physicsSystem  = Factory::GetInstance()->CreatePhysicsSystem();
     _rendererSystem = Factory::GetInstance()->CreateRendererSystem();
 
     _character = Factory::GetInstance()->CreateCharacter(Vector2{ 6, TILE_HEIGHT_COUNT / 2});
@@ -61,10 +61,14 @@ void Game::HandleInput()
     CharacterInputHandler characterHandler;
     characterHandler.next(_character);
 
-    // TODO: Prevent multiple tile dragging
+    bool dragging = false;
     DraggableTileInputHandler draggableTileHandler;
     for (Entity tile : _tiles) {
-        draggableTileHandler.next(tile);
+        if (dragging) {
+            break;
+        }
+
+        dragging = draggableTileHandler.next(tile);
     }
 }
 

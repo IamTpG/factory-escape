@@ -13,7 +13,7 @@ std::string DraggableTileInputHandler::ToString() const
     return "DraggableTileInputHandler";
 }
 
-void DraggableTileInputHandler::next(Entity tile)
+bool DraggableTileInputHandler::next(Entity tile)
 {
     Signature signature = Coordinator::GetInstance()->GetEntitySignature(tile);
     ComponentType draggableType = Coordinator::GetInstance()->GetComponentType<Draggable>();
@@ -22,7 +22,7 @@ void DraggableTileInputHandler::next(Entity tile)
         If the tile does not have draggable component then skip
     */
     if (signature.test(draggableType) == false) {
-        return;
+        return false;
     }
 
     Draggable   &draggable  = Coordinator::GetInstance()->GetComponent<Draggable>(tile);
@@ -63,4 +63,6 @@ void DraggableTileInputHandler::next(Entity tile)
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
         draggable.dragging = false;
     }
+    
+    return draggable.dragging;
 }

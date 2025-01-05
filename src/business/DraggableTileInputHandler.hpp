@@ -9,7 +9,7 @@ class DraggableTileInputHandler : public Object {
 public:
     virtual std::string ToString() const override;
 public:
-    void next(Entity tile);
+    bool next(Entity tile);
 };
 
 #endif // _DRAGGABLE_TILE_INPUT_HANDLER_HPP_
