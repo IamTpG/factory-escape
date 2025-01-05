@@ -53,7 +53,7 @@ Vector2 ColliderSystem::CollideWithOther(const Entity &pEntity)
         }
 
         if (FloatLessThanOrEquals(bx1, ax1) && FloatLessThanOrEquals(ax1, bx2)) {
-            offset.x = ax1 - bx2;
+            offset.x = bx2 - ax1;
         }
 
         if (FloatLessThanOrEquals(bx1, ax2) && FloatLessThanOrEquals(ax2, bx2)) {
@@ -61,15 +61,15 @@ Vector2 ColliderSystem::CollideWithOther(const Entity &pEntity)
         }
 
         if (FloatLessThanOrEquals(by1, ay1) && FloatLessThanOrEquals(ay1, by2)) {
-            offset.y = ay1 - by2;
+            offset.y = by2 - ay1;
         }
 
         if (FloatLessThanOrEquals(by1, ay2) && FloatLessThanOrEquals(ay2, by2)) {
             offset.y = by1 - ay2;
         }
 
-        if (FloatEquals(offset.x, 0.0f) == false && FloatEquals(offset.y, 0.0f) == false) {
 
+        if (FloatEquals(offset.x, 0.0f) == false && FloatEquals(offset.y, 0.0f) == false) {
             printf("Entity #%d collides with Entity #%d\n", pEntity, entity);
 
             return offset;

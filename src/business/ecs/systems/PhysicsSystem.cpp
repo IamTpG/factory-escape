@@ -21,6 +21,7 @@ void PhysicsSystem::Update(float deltaTime)
 {
     std::shared_ptr<ColliderSystem> colliderSystem = std::dynamic_pointer_cast<ColliderSystem>(Coordinator::GetInstance()->GetSystem<ColliderSystem>());
     Vector2 offset = Vector2Zero();
+    float deltaAccelerationX = 0.0f, deltaAccelerationY = 0.0f;
 
     for (const auto &entity : entities) {
 		auto const &gravity = Coordinator::GetInstance()->GetComponent<Gravity>(entity);
@@ -32,7 +33,7 @@ void PhysicsSystem::Update(float deltaTime)
 		// transform.position += gravity.acceleration * deltaTime;
 		// rigidBody.velocity += gravity.acceleration * deltaTime;
 
-        float deltaAccelerationX = (rigidBody.acceleration.x) * deltaTime;
+        deltaAccelerationX = (rigidBody.acceleration.x) * deltaTime;
         
 		rigidBody.velocity.x += deltaAccelerationX;
 		transform.position.x += rigidBody.velocity.x;
@@ -40,20 +41,13 @@ void PhysicsSystem::Update(float deltaTime)
     
         offset = colliderSystem->CollideWithOther(entity);
         
-        /*
-            This offset method is not good enough.
-            The entity should "slowly" move back
-            until there is no collision (eg. transform.posistion.x -= 0.1)
-
-            TODO: Use a different method to handle the above problem.
-        */
         if (Vector2Equals(offset, Vector2Zero()) == false) {
             transform.position.x += offset.x;
             collider.boundary.x  += offset.x;
             rigidBody.velocity.x  = 0.0f;
         }
 
-        float deltaAccelerationY = (rigidBody.acceleration.y + gravity.acceleration.y) * deltaTime;
+        deltaAccelerationY = (rigidBody.acceleration.y + gravity.acceleration.y) * deltaTime;
         
 		rigidBody.velocity.y += deltaAccelerationY;
 		transform.position.y += rigidBody.velocity.y;
@@ -61,14 +55,6 @@ void PhysicsSystem::Update(float deltaTime)
             
         offset = colliderSystem->CollideWithOther(entity);
 
-
-        /*
-            This offset method is not good enough.
-            The entity should "slowly" move back
-            until there is no collision (eg. transform.posistion.y -= 0.1)
-
-            TODO: Use a different method to handle the above problem.
-        */
         if (Vector2Equals(offset, Vector2Zero()) == false) {
             transform.position.y += offset.y;
             collider.boundary.y  += offset.y;
