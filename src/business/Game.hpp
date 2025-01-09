@@ -6,8 +6,9 @@
 #include <vector>
 
 #include "../models/Object.hpp"
-#include "../business/ecs/core/ECSTypes.hpp"
+#include "../models/Level.hpp"
 
+#include "../business/ecs/core/ECSTypes.hpp"
 #include "ecs/core/System.hpp"
 
 /// @brief Main class
@@ -38,9 +39,7 @@ public:
 private:
     std::shared_ptr<System> _colliderSystem, _physicsSystem, _rendererSystem;
 
-    // temporary
-    Entity _character;
-    std::vector<Entity> _tiles;
+    Level* level;
 };
 
 #endif // _GAME_HPP_

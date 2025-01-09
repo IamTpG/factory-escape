@@ -3,6 +3,8 @@
 
 #include "ecs/core/Coordinator.hpp"
 
+#include "../data-access/LevelProvider.hpp"
+
 #include "Factory.hpp"
 #include "CharacterInputHandler.hpp"
 #include "DraggableTileInputHandler.hpp"
@@ -21,25 +23,8 @@ void Game::Init()
     _physicsSystem  = Factory::GetInstance()->CreatePhysicsSystem();
     _rendererSystem = Factory::GetInstance()->CreateRendererSystem();
 
-    _character = Factory::GetInstance()->CreateCharacter(Vector2{ 6, TILE_HEIGHT_COUNT / 2});
-
-    _tiles.reserve(TILE_WIDTH_COUNT);
-
-    // Fixed (undraggble) solid tiles
-    for (int i = 0; i < 5; i++) {
-        Entity tile = Factory::GetInstance()->CreateSolidTile(Vector2{(float)i, (float)TILE_HEIGHT_COUNT - 3}, 41);
-        _tiles.push_back(tile);
-    }
-    for (int i = 5; i < 9; i++) {
-        Entity tile = Factory::GetInstance()->CreateSolidTile(Vector2{(float)i, (float)TILE_HEIGHT_COUNT - 2}, 41);
-        _tiles.push_back(tile);
-    }
-
-    // Draggable tiles
-    for (int i = 9; i < TILE_WIDTH_COUNT; i++) {
-        Entity tile = Factory::GetInstance()->CreateDraggableTile(Vector2{(float)i, (float)TILE_HEIGHT_COUNT - 3}, 41);
-        _tiles.push_back(tile);
-    }
+    LevelProvider levelProvider;
+    level = levelProvider.next(0);
 }
 
 void Game::Run()
@@ -53,19 +38,23 @@ void Game::Run()
 
 void Game::Shutdown()
 {
+    level->Destroy();
+    delete level;
+    level = nullptr;
+
     CloseWindow();
 }
 
 void Game::HandleInput()
 {
     CharacterInputHandler characterHandler;
-    characterHandler.next(_character);
+    characterHandler.next(level->character);
 
     static Entity draggingEntity = MAX_ENTITIES;
     DraggableTileInputHandler draggableTileHandler;
 
     if (draggingEntity == MAX_ENTITIES) {
-        for (Entity tile : _tiles) {
+        for (Entity tile : level->draggableTiles) {
             if (draggableTileHandler.next(tile)) {
                 draggingEntity = tile;
                 break;
@@ -77,6 +66,16 @@ void Game::HandleInput()
             draggingEntity = MAX_ENTITIES;
         }
     }
+
+    // Temporary key to restart level
+    if (IsKeyPressed(KEY_R)) {
+        level->Destroy();
+        delete level;
+
+        LevelProvider levelProvider;
+        level = levelProvider.next(0);
+    }
+
 }
 
 void Game::Update()
