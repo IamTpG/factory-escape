@@ -21,24 +21,21 @@ void PhysicsSystem::Update(float deltaTime)
 {
     std::shared_ptr<ColliderSystem> colliderSystem = std::dynamic_pointer_cast<ColliderSystem>(Coordinator::GetInstance()->GetSystem<ColliderSystem>());
     Vector2 offset = Vector2Zero();
-    float deltaAccelerationX = 0.0f, deltaAccelerationY = 0.0f;
+    float accelerationX = 0.0f, accelerationY = 0.0f;
 
     for (const auto &entity : entities) {
-		auto const &gravity = Coordinator::GetInstance()->GetComponent<Gravity>(entity);
+		const auto &gravity = Coordinator::GetInstance()->GetComponent<Gravity>(entity);
 		
         auto &transform = Coordinator::GetInstance()->GetComponent<Transform2>(entity);
         auto &rigidBody = Coordinator::GetInstance()->GetComponent<RigidBody>(entity);
 		auto &collider  = Coordinator::GetInstance()->GetComponent<Collider>(entity);
 
-		// transform.position += gravity.acceleration * deltaTime;
-		// rigidBody.velocity += gravity.acceleration * deltaTime;
-
-        deltaAccelerationX = (rigidBody.acceleration.x) * deltaTime;
+        // x = x_0 + (v_0 * t) + (0.5 * a * t^2)
+        // v = v_0 + (a * t)
+        accelerationX = rigidBody.acceleration.x;
+		transform.position.x += (rigidBody.velocity.x * deltaTime) + (0.5f * accelerationX * deltaTime * deltaTime);
+		rigidBody.velocity.x += (accelerationX * deltaTime);
         
-		rigidBody.velocity.x += deltaAccelerationX;
-		transform.position.x += rigidBody.velocity.x;
-		collider.boundary.x  += rigidBody.velocity.x;
-    
         offset = colliderSystem->CollideWithOther(entity);
         
         if (Vector2Equals(offset, Vector2Zero()) == false) {
@@ -47,12 +44,12 @@ void PhysicsSystem::Update(float deltaTime)
             rigidBody.velocity.x  = 0.0f;
         }
 
-        deltaAccelerationY = (rigidBody.acceleration.y + gravity.acceleration.y) * deltaTime;
-        
-		rigidBody.velocity.y += deltaAccelerationY;
-		transform.position.y += rigidBody.velocity.y;
-		collider.boundary.y  += rigidBody.velocity.y;
-            
+        // x = x_0 + (v_0 * t) + (0.5 * a * t^2)
+        // v = v_0 + (a * t)
+        accelerationY = rigidBody.acceleration.y + gravity.acceleration.y;
+		transform.position.y += (rigidBody.velocity.y * deltaTime) + (0.5f * accelerationX * deltaTime * deltaTime);
+		rigidBody.velocity.y += (accelerationY * deltaTime);
+                    
         offset = colliderSystem->CollideWithOther(entity);
 
         if (Vector2Equals(offset, Vector2Zero()) == false) {
