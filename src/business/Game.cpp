@@ -61,14 +61,21 @@ void Game::HandleInput()
     CharacterInputHandler characterHandler;
     characterHandler.next(_character);
 
-    bool dragging = false;
+    static Entity draggingEntity = MAX_ENTITIES;
     DraggableTileInputHandler draggableTileHandler;
-    for (Entity tile : _tiles) {
-        if (dragging) {
-            break;
-        }
 
-        dragging = draggableTileHandler.next(tile);
+    if (draggingEntity == MAX_ENTITIES) {
+        for (Entity tile : _tiles) {
+            if (draggableTileHandler.next(tile)) {
+                draggingEntity = tile;
+                break;
+            }
+        }
+    }
+    else {
+        if (!draggableTileHandler.next(draggingEntity)) {
+            draggingEntity = MAX_ENTITIES;
+        }
     }
 }
 
