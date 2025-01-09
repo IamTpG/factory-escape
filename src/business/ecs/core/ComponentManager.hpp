@@ -12,7 +12,7 @@
 /// @brief Class to manage components
 class ComponentManager : public Object {    
 public:
-	std::string ToString() const override;
+	virtual std::string ToString() const override;
 
 public:
 	/// @brief Register a component type

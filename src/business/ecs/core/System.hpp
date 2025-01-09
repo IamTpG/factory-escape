@@ -12,7 +12,7 @@ public:
 	virtual std::string ToString() const override;
 
 public:
-	virtual void Update(float deltaTime = 0.0f) = 0;
+	virtual void Update(float deltaTime = 0.0f);
 
 public:
 	std::set<Entity> entities;

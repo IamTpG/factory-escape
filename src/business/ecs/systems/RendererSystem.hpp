@@ -6,7 +6,7 @@
 /// @brief System class to handle rendering
 class RendererSystem : public System {
 public:
-    std::string ToString() const override;
+    virtual std::string ToString() const override;
 
 public:
     virtual void Update(float deltaTime) override;

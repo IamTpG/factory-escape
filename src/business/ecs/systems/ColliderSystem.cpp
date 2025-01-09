@@ -13,11 +13,6 @@ std::string ColliderSystem::ToString() const
     return "ColliderSystem";
 }
 
-void ColliderSystem::Update(float deltaTime)
-{
-    // Do nothing
-}
-
 Vector2 ColliderSystem::CollideWithOther(const Entity &pEntity)
 {
     // If the pEntity is not in the system, there is no collision.

@@ -33,7 +33,7 @@ public:
     void Update();
 
     /// @brief Render all the objects and display them on the screen
-    void Render();    
+    void Render();
 
 private:
     std::shared_ptr<System> _colliderSystem, _physicsSystem, _rendererSystem;

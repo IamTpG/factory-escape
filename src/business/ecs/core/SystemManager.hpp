@@ -11,7 +11,7 @@
 
 class SystemManager : public Object {
 public:
-	std::string ToString() const override;
+	virtual std::string ToString() const override;
 
 public:
 	/// @brief Register a system to use (eg. Physic system)

@@ -12,8 +12,12 @@
 
 /// @brief Class to access methods all the managers
 class Coordinator : public Object {
+private:
+	// Hide constructor for singleton design pattern
+	Coordinator() = default;
+
 public:
-    std::string ToString() const override;
+	virtual std::string ToString() const override;
 
 public:
 	void Init();
@@ -32,7 +36,6 @@ public:
 
 	/// @brief Get an entity signature (its components)
 	Signature GetEntitySignature(Entity pEntity);
-
 
 
 	

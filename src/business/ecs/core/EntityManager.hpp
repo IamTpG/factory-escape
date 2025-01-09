@@ -12,7 +12,7 @@
 class EntityManager : public Object
 {
 public:
-    std::string ToString() const override;
+	virtual std::string ToString() const override;
 
 public:
 	/// @brief Initialize

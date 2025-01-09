@@ -2,6 +2,7 @@
 
 #include "../models/Config.hpp"
 #include "../data-access/RenderableProvider.hpp"
+#include "../data-access/AnimationProvider.hpp"
 
 #include "ecs/core/Coordinator.hpp"
 
@@ -15,6 +16,7 @@
 #include "ecs/components/RigidBody.hpp"
 #include "ecs/components/Transform.hpp"
 #include "ecs/components/Draggable.hpp"
+#include "ecs/components/Animation.hpp"
 
 std::string Factory::ToString() const
 {
@@ -31,6 +33,7 @@ Factory::Factory()
     Coordinator::GetInstance()->RegisterComponent<RigidBody>();
     Coordinator::GetInstance()->RegisterComponent<Transform2>();
     Coordinator::GetInstance()->RegisterComponent<Draggable>();
+    Coordinator::GetInstance()->RegisterComponent<Animation>();
 }
 
 std::shared_ptr<Factory> Factory::GetInstance()
@@ -81,8 +84,11 @@ std::shared_ptr<System> Factory::CreateRendererSystem()
 
 Entity Factory::CreateCharacter(Vector2 pPosition)
 {
-    RenderableProvider provider;
-    Renderable renderable = provider.next(CHARACTER_PATH, Rectangle{0, 0, 16, 16});
+    RenderableProvider renderableProvider;
+    AnimationProvider animationProvider;
+
+    Renderable renderable = renderableProvider.next(CHARACTER_PATH, Rectangle{0, 0, 16, 16});
+    Animation animation = animationProvider.next(CHARACTER_ANIMATION_PATH);
 
     Transform2 transform = Transform2 {
         .position   = Vector2{(float)SCREEN_OFFSET + pPosition.x * TILE_SIZE, (float)SCREEN_OFFSET + pPosition.y * TILE_SIZE},
@@ -115,6 +121,7 @@ Entity Factory::CreateCharacter(Vector2 pPosition)
     Coordinator::GetInstance()->AddComponent<RigidBody> (character, rigidBody);
     Coordinator::GetInstance()->AddComponent<Gravity>   (character, gravity);
     Coordinator::GetInstance()->AddComponent<Renderable>(character, renderable);
+    Coordinator::GetInstance()->AddComponent<Animation> (character, animation);
 
     return character;
 }

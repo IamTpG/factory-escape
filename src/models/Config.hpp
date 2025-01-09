@@ -16,6 +16,7 @@
 #define GAME_FPS            60
 
 #define CHARACTER_PATH      "assets/character.png"
+#define CHARACTER_ANIMATION_PATH      "assets/character-animation.txt"
 #define FACTORY_PATH        "assets/factory.png"
 
 #define GRAVITY             16.0f

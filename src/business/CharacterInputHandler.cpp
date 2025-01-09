@@ -3,6 +3,7 @@
 
 #include "ecs/core/Coordinator.hpp"
 #include "ecs/components/RigidBody.hpp"
+#include "ecs/components/Animation.hpp"
 
 #include <raymath.h>
 
@@ -20,13 +21,16 @@ void CharacterInputHandler::next(Entity character)
     */
 
     RigidBody &rigidBody = Coordinator::GetInstance()->GetComponent<RigidBody>(character);
+    Animation &animation = Coordinator::GetInstance()->GetComponent<Animation>(character);
 
     if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT)) {
         rigidBody.velocity.x = -CHARACTER_SPEED_X;
+        animation.currentState = (int)CharacterAnimation::GO_LEFT;
     }
 
     if (IsKeyDown(KEY_D) || IsKeyDown(KEY_RIGHT)) {
         rigidBody.velocity.x = CHARACTER_SPEED_X;
+        animation.currentState = (int)CharacterAnimation::GO_RIGHT;
     }
 
     if (FloatEquals(rigidBody.velocity.y, 0.0f) && (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))) {
@@ -35,9 +39,11 @@ void CharacterInputHandler::next(Entity character)
 
     if (IsKeyReleased(KEY_A) || IsKeyReleased(KEY_LEFT)) {
         rigidBody.velocity.x = 0;
+        animation.currentState = (int)CharacterAnimation::IDLE_LEFT;
     }
 
     if (IsKeyReleased(KEY_D) || IsKeyReleased(KEY_RIGHT)) {
         rigidBody.velocity.x = 0;
+        animation.currentState = (int)CharacterAnimation::IDLE_RIGHT;
     }
 }
