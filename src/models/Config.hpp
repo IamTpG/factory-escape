@@ -7,6 +7,9 @@
 #define TILE_HEIGHT_COUNT   10
 #define TILE_SIZE           64
 
+#define BUTTON_WIDTH        138
+#define BUTTON_HEIGHT       53
+
 #define SCREEN_OFFSET       20
 
 #define SCREEN_WIDTH        (2 * SCREEN_OFFSET + TILE_WIDTH_COUNT * TILE_SIZE)
@@ -18,6 +21,7 @@
 #define CHARACTER_PATH                  "assets/character.png"
 #define CHARACTER_ANIMATION_PATH        "assets/character-animation.txt"
 #define FACTORY_PATH                    "assets/factory.png"
+#define BUTTON_PATH                     "assets/buttons/button.png"
 #define LEVEL_PATH                      "levels/level"
 
 #define GRAVITY             16.0f

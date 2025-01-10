@@ -165,10 +165,29 @@ Entity Factory::CreateSolidTile(Vector2 pPosition, int pId)
     return tile;
 }
 
-
 Entity Factory::CreateDraggableTile(Vector2 pPosition, int pId)
 {
     Entity tile = CreateSolidTile(pPosition, pId);
     Coordinator::GetInstance()->AddComponent<Draggable>(tile, Draggable{.dragging = false});
     return tile;
+}
+
+
+Entity Factory::CreateButton(Vector2 pPosition, int pId)
+{
+    RenderableProvider provider;
+    Renderable renderable = provider.next(BUTTON_PATH, Rectangle{(float)(pId / 10) * BUTTON_WIDTH, (float)(pId % 10) * BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT});
+
+    Transform2 transform = Transform2 {
+        .position   = Vector2{(float)SCREEN_OFFSET + pPosition.x, (float)SCREEN_OFFSET + pPosition.y},
+        .scale      = Vector2{(float)BUTTON_WIDTH / renderable.rect.width, (float)BUTTON_HEIGHT / renderable.rect.height},
+        .rotation   = 0.0f
+    };
+
+    Entity button = Coordinator::GetInstance()->CreateEntity();
+
+    Coordinator::GetInstance()->AddComponent<Transform2>(button, transform);
+    Coordinator::GetInstance()->AddComponent<Renderable>(button, renderable);
+
+    return button;
 }

@@ -1,6 +1,7 @@
 #ifndef _LEVEL_HPP_
 #define _LEVEL_HPP_
 
+#include <raylib.h>
 #include <vector>
 
 #include "Object.hpp"
@@ -17,6 +18,11 @@ public:
     Entity character;
     std::vector<Entity> fixedTiles;
     std::vector<Entity> draggableTiles;
+
+    Vector2 chararcterSpawnpoint;
+    bool characterMoving;
+
+    Entity playButton, replayButton, restartButton;
 };
 
 #endif // _LEVEL_HPP_

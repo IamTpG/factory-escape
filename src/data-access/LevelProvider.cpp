@@ -22,6 +22,10 @@ Level* LevelProvider::next(int levelId)
     std::vector<Entity> &fixedTiles     = level->fixedTiles;
     std::vector<Entity> &draggableTiles = level->draggableTiles;
 
+    Entity &playButton      = level->playButton;
+    Entity &replayButton    = level->replayButton;
+    Entity &restartButton   = level->restartButton;
+
     character = Factory::GetInstance()->CreateCharacter(Vector2{ 6, TILE_HEIGHT_COUNT / 2});
 
     // Fixed (undraggble) solid tiles
@@ -40,5 +44,9 @@ Level* LevelProvider::next(int levelId)
         draggableTiles.push_back(tile);
     }
 
+    playButton      = Factory::GetInstance()->CreateButton(Vector2{20,  20}, 0);
+    replayButton    = Factory::GetInstance()->CreateButton(Vector2{178, 20}, 1);
+    restartButton   = Factory::GetInstance()->CreateButton(Vector2{336, 20}, 2);
+    
     return level;
 }

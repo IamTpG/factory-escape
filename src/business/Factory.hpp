@@ -37,6 +37,8 @@ public:
     Entity CreateDecorativeTile(Vector2 pPosition, int pId);
     Entity CreateSolidTile(Vector2 pPosition, int pId);
     Entity CreateDraggableTile(Vector2 pPosition, int pId);
+
+    Entity CreateButton(Vector2 pPosition, int pId);
 };
 
 #endif // _FACTORY_HPP_

@@ -11,7 +11,7 @@ std::string Level::ToString() const
 void Level::Destroy()
 {
     Coordinator::GetInstance()->DestroyEntity(character);
-    
+
     for (Entity &entity : fixedTiles) {
         Coordinator::GetInstance()->DestroyEntity(entity);
     }
@@ -19,4 +19,8 @@ void Level::Destroy()
     for (Entity &entity : draggableTiles) {
         Coordinator::GetInstance()->DestroyEntity(entity);
     }
+
+    Coordinator::GetInstance()->DestroyEntity(playButton);
+    Coordinator::GetInstance()->DestroyEntity(replayButton);
+    Coordinator::GetInstance()->DestroyEntity(restartButton);
 }
