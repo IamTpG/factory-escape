@@ -37,6 +37,8 @@ public:
     void Render();
 
 private:
+    bool _dragging;
+    Texture2D _grid;
     std::shared_ptr<System> _colliderSystem, _physicsSystem, _rendererSystem;
 
     Level* level;

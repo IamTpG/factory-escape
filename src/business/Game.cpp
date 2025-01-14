@@ -8,11 +8,12 @@
 
 #include "../data-access/LevelProvider.hpp"
 
+#include "../data-access/RenderableProvider.hpp"
 #include "Factory.hpp"
 #include "CharacterInputHandler.hpp"
 #include "DraggableTileInputHandler.hpp"
 #include "ButtonInputHandler.hpp"
-
+#include <iostream>
 std::string Game::ToString() const
 {
     return "Game";
@@ -23,6 +24,11 @@ void Game::Init()
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, TITLE);
     SetTargetFPS(GAME_FPS);
 
+    Image image = LoadImage("assets/grid.png");
+    _grid = LoadTextureFromImage(image);
+    UnloadImage(image);
+
+    _dragging = false;
     _colliderSystem = Factory::GetInstance()->CreateColliderSystem();
     _physicsSystem  = Factory::GetInstance()->CreatePhysicsSystem();
     _rendererSystem = Factory::GetInstance()->CreateRendererSystem();
@@ -32,8 +38,8 @@ void Game::Init()
 
     level->chararcterSpawnpoint = Coordinator::GetInstance()->GetComponent<Transform2>(level->character).position;
     level->characterMoving = false;
-}
 
+}
 void Game::Run()
 {
     while (!WindowShouldClose()) {
@@ -61,17 +67,22 @@ void Game::HandleInput()
     DraggableTileInputHandler draggableTileHandler;
 
     if (level->characterMoving == false) {
+        
         if (draggingEntity == MAX_ENTITIES) {
             for (Entity tile : level->draggableTiles) {
-                if (draggableTileHandler.next(tile)) {
+                _dragging = draggableTileHandler.next(tile);
+                if (_dragging) {
                     draggingEntity = tile;
                     break;
                 }
+                
             }
         }
         else {
-            if (!draggableTileHandler.next(draggingEntity)) {
+            if ( !draggableTileHandler.next(draggingEntity)) {
+                
                 draggingEntity = MAX_ENTITIES;
+              
             }
         }
     }
@@ -129,7 +140,24 @@ void Game::Update()
 void Game::Render()
 {
     BeginDrawing();
-        ClearBackground(Color{255, 236, 214, 255});
+        if(_dragging) {
+            ClearBackground(Color{200, 255, 200, 255});
+            Rectangle source{0,0,1024,1024};
+            Vector2 zero = { 0.0f, 0.0f };
+            for(int i = 0; i < 10; i++) {
+                for(int j =0; j < 15; j++) {
+                    std::cout << "Drawing grid" << std::endl;
+                    Rectangle dest{20+ j * 64, 20 + i * 64, 64, 64};
+                    DrawTexturePro(_grid,source,dest,zero,0,WHITE); 
+                }
+            }   
+            
+            //rendergrid
+        }
+        else {
+            ClearBackground(Color{255, 236, 214, 255});
+        }
         _rendererSystem->Update();
+        
     EndDrawing();
 }
