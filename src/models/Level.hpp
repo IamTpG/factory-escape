@@ -20,6 +20,8 @@ public:
     std::vector<Entity> draggableTiles;
 
     Vector2 chararcterSpawnpoint;
+
+    // TODO: move this variable to Game Class
     bool characterMoving;
 
     Entity playButton, replayButton, restartButton;

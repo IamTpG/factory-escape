@@ -1,4 +1,5 @@
 #include "Game.hpp"
+
 #include "../models/Config.hpp"
 
 #include "ecs/core/Coordinator.hpp"
