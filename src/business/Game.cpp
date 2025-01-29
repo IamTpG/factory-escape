@@ -143,12 +143,12 @@ void Game::Render()
     BeginDrawing();
         if(_dragging) {
             ClearBackground(Color{200, 255, 200, 255});
-            Rectangle source{0,0,1024,1024};
+            Rectangle source{0,0,16,16};
             Vector2 zero = { 0.0f, 0.0f };
-            for(int i = 0; i < 10; i++) {
-                for(int j =0; j < 15; j++) {
-                    std::cout << "Drawing grid" << std::endl;
-                    Rectangle dest{20+ j * 64, 20 + i * 64, 64, 64};
+            for(int YPosition = 0; YPosition < 10; YPosition++) {
+                for(int XPosition =0; XPosition < 15; XPosition++) {
+                    
+                    Rectangle dest{SCREEN_OFFSET+ XPosition * 64, SCREEN_OFFSET + YPosition * 64, 64, 64};
                     DrawTexturePro(_grid,source,dest,zero,0,WHITE); 
                 }
             }   
