@@ -24,9 +24,9 @@ void RendererSystem::Update(float deltaTime)
     ComponentType animationType = Coordinator::GetInstance()->GetComponentType<Animation>(); 
 
     for (const auto &entity : entities) {
+        
         const Renderable &renderable = Coordinator::GetInstance()->GetComponent<Renderable>(entity);
         const Transform2 &transform  = Coordinator::GetInstance()->GetComponent<Transform2>(entity);
-
         Signature entitySignature = Coordinator::GetInstance()->GetEntitySignature(entity);
 
         if (entitySignature.test(animationType) == true) {

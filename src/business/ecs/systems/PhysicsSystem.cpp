@@ -30,6 +30,8 @@ void PhysicsSystem::Update(float deltaTime)
         auto &rigidBody = Coordinator::GetInstance()->GetComponent<RigidBody>(entity);
 		auto &collider  = Coordinator::GetInstance()->GetComponent<Collider>(entity);
 
+
+        // check X
         deltaAccelerationX = (rigidBody.acceleration.x) * deltaTime;
         
 		rigidBody.velocity.x += deltaAccelerationX * 0.5f;
@@ -44,7 +46,7 @@ void PhysicsSystem::Update(float deltaTime)
             collider.boundary.x  += offset.x;
             rigidBody.velocity.x  = 0.0f;
         }
-
+        // check Y
         deltaAccelerationY = (rigidBody.acceleration.y + gravity.acceleration.y) * deltaTime;
         
 		rigidBody.velocity.y += deltaAccelerationY * 0.5f;

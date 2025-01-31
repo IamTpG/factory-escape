@@ -148,7 +148,7 @@ void Game::Render()
             for(int YPosition = 0; YPosition < 10; YPosition++) {
                 for(int XPosition =0; XPosition < 15; XPosition++) {
                     
-                    Rectangle dest{SCREEN_OFFSET+ XPosition * 64, SCREEN_OFFSET + YPosition * 64, 64, 64};
+                    Rectangle dest{(float)SCREEN_OFFSET+ (float)XPosition * 64, (float)SCREEN_OFFSET + (float)YPosition * 64, 64, 64};
                     DrawTexturePro(_grid,source,dest,zero,0,WHITE); 
                 }
             }   

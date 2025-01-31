@@ -144,6 +144,24 @@ Entity Factory::CreateDecorativeTile(Vector2 pPosition, int pId)
 
     return tile;
 }
+Entity Factory::CreatePortalTile(Vector2 pPosition)
+{
+    RenderableProvider provider;
+    Renderable renderable = provider.next(PORTAL_PATH, Rectangle{(float)0, (float)0, 16, 16});
+
+    Transform2 transform = Transform2 {
+        .position   = Vector2{(float)SCREEN_OFFSET + pPosition.x * TILE_SIZE, (float)SCREEN_OFFSET + pPosition.y * TILE_SIZE},
+        .scale      = Vector2{(float)TILE_SIZE / renderable.rect.width, (float)TILE_SIZE / renderable.rect.height},
+        .rotation   = 0.0f
+    };
+
+    Entity tile = Coordinator::GetInstance()->CreateEntity();
+
+    Coordinator::GetInstance()->AddComponent<Transform2>(tile, transform);
+    Coordinator::GetInstance()->AddComponent<Renderable>(tile, renderable);
+
+    return tile;
+}
 
 Entity Factory::CreateSolidTile(Vector2 pPosition, int pId)
 {
@@ -171,6 +189,7 @@ Entity Factory::CreateDraggableTile(Vector2 pPosition, int pId)
     Coordinator::GetInstance()->AddComponent<Draggable>(tile, Draggable{.dragging = false});
     return tile;
 }
+
 
 
 Entity Factory::CreateButton(Vector2 pPosition, int pId)

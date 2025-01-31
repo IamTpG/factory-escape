@@ -19,6 +19,7 @@ public:
     std::vector<Entity> fixedTiles;
     std::vector<Entity> draggableTiles;
 
+    Vector2 portalSpawnpoint;
     Vector2 chararcterSpawnpoint;
 
     // TODO: move this variable to Game Class

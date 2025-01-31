@@ -23,6 +23,7 @@
 #define FACTORY_PATH                    "assets/factory.png"
 #define BUTTON_PATH                     "assets/buttons/button.png"
 #define LEVEL_PATH                      "levels/level"
+#define PORTAL_PATH                     "assets/portal.png"
 
 #define GRAVITY             16.0f
 #define CHARACTER_SPEED_X   6.0f
